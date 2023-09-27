@@ -22,14 +22,14 @@ use Lingua::JA::Moji qw/ascii2wide/;
 use Parallel::ForkManager;
 my $pm = Parallel::ForkManager->new(16);
 
-`rm -r -f txt2`;
-`mkdir txt2`;
+`rm -r -f ../../TDNET/mk_txt/txt2`;
+`mkdir ../../TDNET/mk_txt/txt2`;
 
 main();
 
 sub main
 {
-  my $pdf_dir = "./pdf/20170103";
+  my $pdf_dir = "../../TDNET/pdf/20170103";
 
   my @PDF_List;
   find( sub{ push(@PDF_List,$File::Find::name) if(-f $_); },$pdf_dir);
@@ -47,10 +47,10 @@ sub main
 
       my @sentence = getSentence($pdf_file);
 
-      my $date = $e[2];
-      my($pdf) = split(/\./,$e[3]);
+      my $date = $e[4];
+      my($pdf) = split(/\./,$e[5]);
 
-      my $out_file = "./txt2/".$date."_".$pdf.".txt";
+      my $out_file = "../../TDNET/mk_txt/txt2/".$date."_".$pdf.".txt";
 
       print "$out_file\n";
 
