@@ -18,7 +18,7 @@ from transformers import pipeline
 from tqdm import tqdm
 
 BERT_MODEL = "cl-tohoku/bert-base-japanese-v2"
-DATASET_PATH = "train.list"
+DATASET_PATH = "../makeTrainData/train.list"
 EPOCH = 12
 BACH = 32
 NUM_LABELS = 8  # クラス数（２値分類なら２）
@@ -100,7 +100,7 @@ def main():
 
     tc_pipeline = pipeline("text-classification", model=model, tokenizer=tokenizer, config=config, device=0)
 
-    with open('test.list') as reader:
+    with open('../makeTestData/test.list') as reader:
         lines = reader.read().split('\n')
 
     fp = open("output", mode="w")

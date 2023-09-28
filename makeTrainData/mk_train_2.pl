@@ -24,7 +24,7 @@ sub main(){
     my @data2=split(/ /, $data[1]);
     my $lb=$data2[0];
     my $filename=$data[0];
-    open(my $in2, "TDNET/mk_txt/txt/$filename");
+    open(my $in2, "../../TDNET/mk_txt/txt/$filename");
     my $sid=1;
 
 

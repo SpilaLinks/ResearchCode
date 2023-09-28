@@ -17,7 +17,7 @@ sub main{
   }#while
 
   foreach my $fn(@fileids){
-    open(my $in, "./TDNET/mk_txt/txt/$fn");
+    open(my $in, "../../TDNET/mk_txt/txt/$fn");
 
     while(my $line=decode_utf8(<$in>)){
       chomp($line);

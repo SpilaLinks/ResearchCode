@@ -15,7 +15,7 @@ main();
 
 sub main(){
 
-  open(my $in, "label.txt");
+  open(my $in, "../makeTrainData/label.txt");
 
   while(my $line=decode_utf8(<$in>)){
     chomp($line);
@@ -23,7 +23,7 @@ sub main(){
     if($#data>=1){next;}
 
     my $filename=$data[0];
-    open(my $in2, "TDNET/mk_txt/txt/$filename");
+    open(my $in2, "../../TDNET/mk_txt/txt/$filename");
     my $sid=1;
 
 

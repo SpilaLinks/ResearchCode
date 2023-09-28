@@ -33,7 +33,7 @@ def main():
     BATCH_SIZE = 16
     NUM_EPOCHS = 10
     EVAL_STEPS = 500
-    OUTPUT_PATH = "./model"
+    OUTPUT_PATH = "../../model"
     
     triplet_reader = TripletReader(".")
     train_examples = triplet_reader.get_examples('train.tsv')

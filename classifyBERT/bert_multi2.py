@@ -21,7 +21,7 @@ def main():
     epochs = 5   # 十分に学習できていれば、3くらいに減らしてもよい
     MAX = 80     # 80以上にするには 8GB以上のVRAMが必要
 
-    train_labels, train_texts = get_tuples_label_sentence("train.list")
+    train_labels, train_texts = get_tuples_label_sentence("../makeTrainData/train.list")
     max_length = max([len(sent) for sent in train_texts])
 
     if max_length > MAX:
@@ -36,7 +36,7 @@ def main():
     model.fit(x_train,y_train,batch_size=batch_size,epochs=epochs)
 
     # 予測
-    sent_id, test_texts = get_sentence("test.list")
+    sent_id, test_texts = get_sentence("../makeTestData/test.list")
     x_test = to_features(test_texts, max_length)
     y_predicts = model.predict(x_test)
 

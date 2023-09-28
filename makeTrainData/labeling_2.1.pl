@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-#最終更新日：6/12
+#最終更新日：
 
 use strict;
 use Encode;
@@ -11,8 +11,8 @@ main();
 
 sub main()
 {
-   my $home = $ENV{"HOME"};
-   my $TextDir = $home."/data/TDNET/mk_txt/";
+   #my $home = $ENV{"HOME"};
+   my $TextDir = "../../TDNET/mk_txt/";
    my @TextList;
    find( sub{ push(@TextList,$File::Find::name) if(-f $_); },$TextDir);
 
