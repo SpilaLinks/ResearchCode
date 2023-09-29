@@ -2,7 +2,7 @@
 
 use strict;
 
-# 文字コード関係aaa
+# 文字コード関係
 use Encode;
 use Encode::Detect::Detector;
 use Unicode::Normalize;
@@ -29,7 +29,7 @@ main();
 
 sub main
 {
-  my $pdf_dir = "../../TDNET/pdf/20170103";
+  my $pdf_dir = "../../TDNET/pdf/";
 
   my @PDF_List;
   find( sub{ push(@PDF_List,$File::Find::name) if(-f $_); },$pdf_dir);
