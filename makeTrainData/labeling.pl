@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+#最終更新日：
 
 use strict;
 use Encode;
@@ -10,23 +11,28 @@ main();
 
 sub main()
 {
-   my $home = $ENV{"HOME"};
-   my $TextDir = $home."/data/TDNET/mk_txt/";
+   #my $home = $ENV{"HOME"};
+   my $TextDir = "../../TDNET/mk_txt/";
    my @TextList;
    find( sub{ push(@TextList,$File::Find::name) if(-f $_); },$TextDir);
 
+   my $kessan=0;
+
+   open(my $out, ">kessan.list");
 
    foreach my $file (sort @TextList){     #file単位のループ
        my @data=split(/\//, $file);      #filename
        #print encode_utf8("$data[7],");
 
        open(my $in, $file);
-       my $k=0;        #先頭20行のみ探索
+
+       my $k=0;        #先頭15行のみ探索
        my $flag=0;     #ラベル付いたならループ終了のflag
        my $sflag=0;    #子会社のflag
        my $japanese=0; #日本語が含まれているかどうか
+
        while(my $line=decode_utf8(<$in>)){       #1行単位のループ、ラベル付
-         if($k==20){last;}
+         if($k==15){last;}
          if($line==""){last;}
 	       chomp($line);
          if($line=~/[\p{Han}\p{Hiragana}\p{Katakana}]/){$japanese=1;}
@@ -43,7 +49,7 @@ sub main()
          if($sflag==0){
   	       #[1] 上場会社の決定事実
   	       if(
-           ($line=~"新株式発行"&&$line=~"お知らせ") || ($line=~"株式の売出し"||$line=~"株式売出し") || ($line=~"新株予約権付社債"&&$line=~"発行条件")
+           ($line=~"新株式発行" && $line=~"お知らせ") || ($line=~"株式の売出し") || ($line=~"新株予約権付社債"&&$line=~"発行条件")
            || ($line=~"第三者割当"&&$line=~"発行") || ($line=~"第三者割当"&&$line=~"処分")
            || ($line=~"株式報酬"&&$line=~"新株式発行")#1
            || ($line=~"新株式発行"&&$line=~"発行登録")||($line=~"需要状況"&&$line=~"調査開始") #2
@@ -52,7 +58,7 @@ sub main()
            || ($line=~"自己株式"&&$line=~"取得")||($line=~"自己株式"&&$line=~"買付け") #5
            || ($line=~"株式"&&$line=~"無償割当て")||($line=~"新株予約権"&&$line=~"無償割当て")||($line=~"ライツ・オファリング") #6
            || ($line=~"新株予約権無償割当て"&&$line=~"発行登録")
-           ||($line=~"需要状況"&&$line=~"見込み"&&$line=~"調査")||($line=~"権利行使"&&$line=~"見込み"&&$line=~"調査") #7
+           || ($line=~"需要状況"&&$line=~"見込み"&&$line=~"調査")||($line=~"権利行使"&&$line=~"見込み"&&$line=~"調査") #7
            || ($line=~"株式"&&$line=~"分割")||($line=~"株式"&&$line=~"併合") #8
            || ($line=~"剰余金"&&$line=~"配当") #9
            || ($line=~"合併契約"&&$line=~"締結") #10
@@ -115,7 +121,12 @@ sub main()
            ){print encode_utf8("$data[7],1 上場会社の発生事実\n"); $flag++; last;}
 
   	       #3 上場会社の決算情報
-  	       if($line=~"決算短信"){print encode_utf8("$data[7],2 上場会社の決算情報\n"); $flag++; last;}
+  	       if($line=~"決算短信"){
+             if($kessan>=100){print encode_utf8("$data[7],2 上場会社の決算情報\n"); $flag++; last;}
+             $kessan++;
+             print $out encode_utf8("$data[7]\n");
+             last;
+           }
 
   	       #4 上場会社の業績予想、配当予想の修正
   	       if(
@@ -158,12 +169,13 @@ sub main()
              #7 子会社等の発生事実
            if(
            ($line=~"損失"&&$line=~"計上")||($line=~"損害"&&$line=~"発生")||($line=~"不具合"&&$line=~"自主回収")||($line=~"有価証券評価損")#1 1
+           ||($line=~"損害賠償請求訴訟"&&$line=~"提起")||($line=~"損害賠償請求訴訟"&&$line=~"解決")#2 4
            ||($line=~"仮処分命令"&&$line=~"申立")||($line=~"仮処分命令"&&$line=~"決定")#3 5
            ||($line=~"行政処分")#4 6
            ||($line=~"破産手続開始")||($line=~"再生手続開始")||($line=~"更生手続開始")||($line=~"企業担保権"&&$line=~"実行")#5 8
            ||($line=~"約束手形"&&$line=~"不渡り")#6 9
            ||($line=~"孫会社"&&$line=~"破産手続開始")||($line=~"孫会社"&&$line=~"再生手続開始")||($line=~"孫会社"&&$line=~"更生手続開始")||($line=~"孫会社"&&$line=~"企業担保権の実行")#7 10
-           ||($line=~"債権"&&$line=~"取立不能")||($line=~"債権"&&$line=~"取立遅延")#8 11
+           ||($line=~"債権"||$line=~"取立不能")||($line=~"債権"&&$line=~"取立遅延")#8 11
            ||($line=~"取引先"&&$line=~"取引停止")#9 12
            ||($line=~"債務免除"&&$line=~"金融支援")#10 13
            ||($line=~"資源の発見")#1 14
