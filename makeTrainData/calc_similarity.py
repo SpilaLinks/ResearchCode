@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import numpy as np
 import os
-os.environ["http_proxy"] = "http://133.220.110.112:3128"
-os.environ["https_proxy"] = "http://133.220.110.112:3128"
+os.environ["http_proxy"] = "http://proxy.cc.seikei.ac.jp:8080"
+os.environ["https_proxy"] = "http://proxy.cc.seikei.ac.jp:8080"
 #os.environ["CUDA_VISIBLE_DEVICES"]="-1"
 
 import sys
@@ -27,7 +27,7 @@ sentlist7=["子会社等の業績予想の修正、予想値と決算値の差�
 
 
 def main():
-    sbert = SentenceTransformer('../../smodel')
+    sbert = SentenceTransformer('./smodel')
 
     args = sys.argv
     sent1 = args[1]
