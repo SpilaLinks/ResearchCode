@@ -14,7 +14,7 @@ sub main()
     my $l1=0; my $l2=0; my $l3=0; my $l4=0; my $l5=0; my $l6=0;my $l7=0;my $l8=0;
     my $unknown=0;
 
-    open(my $in, "label.txt");
+    open(my $in, "label.list");
     while(my $line=decode_utf8(<$in>)){
 	chomp($line);
 	my @data=split(/,/, $line);

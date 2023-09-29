@@ -18,7 +18,7 @@ sub main()
    my $kessan=0;
 
    open(my $out, ">kessan.list");
-
+   open(my $out2, ">label.list");
    foreach my $file (sort @TextList){     #file単位のループ
        my @data=split(/\//, $file);      #filename
 
@@ -88,7 +88,7 @@ sub main()
            || ($line=~"定款"&&$line=~"変更") #36
            || ($line=~"全部取得条項付種類株式"&&$line=~"取得") #37
            || ($line=~"特別支配株主"&&$line=~"承認")
-           ){print encode_utf8("$data[7],0 上場会社の決定事実\n"); $flag++; last;}
+           ){print $out2 encode_utf8("$data[5],0 上場会社の決定事実\n"); $flag++; last;}
 
   	       #2 上場会社の発生事実
   	       if(
@@ -116,13 +116,13 @@ sub main()
            ||($line=~"監査報告書"&&$line=~"不適正意見") #24
            ||($line=~"内部統制監査報告書"&&$line=~"意見不表明")#25
            ||($line=~"株式事務代行委託契約の解除通知") #26
-           ){print encode_utf8("$data[7],1 上場会社の発生事実\n"); $flag++; last;}
+           ){print $out2 encode_utf8("$data[5],1 上場会社の発生事実\n"); $flag++; last;}
 
   	       #3 上場会社の決算情報
   	       if($line=~"決算短信"){
-             if($kessan>=100){print encode_utf8("$data[7],2 上場会社の決算情報\n"); $flag++; last;}
+             if($kessan>=100){print $out2 encode_utf8("$data[5],2 上場会社の決算情報\n"); $flag++; last;}
              $kessan++;
-             print $out encode_utf8("$data[7]\n");
+             print $out encode_utf8("$data[5]\n");
              last;
            }
 
@@ -130,7 +130,7 @@ sub main()
   	       if(
            ($line=~"業績予想"&&$line=~"修正") #1
            ||($line=~"配当予想"&&$line=~"修正") #2
-           ){print encode_utf8("$data[7],3 上場会社の業績予想、配当予想の修正等\n"); $flag++; last;}
+           ){print $out2 encode_utf8("$data[5],3 上場会社の業績予想、配当予想の修正等\n"); $flag++; last;}
 
   	       #5 その他の情報
   	       if(
@@ -141,7 +141,7 @@ sub main()
            ||($line=~"非上場の親会社") #5
            ||($line=~"事業計画"&&$line=~"事項")||($line=~"成長可能性"&&$line=~"事項") #6
            ||($line=~"上場維持基準"&&$line=~"計画") #7
-           ){print encode_utf8("$data[7],4 その他の情報\n"); $flag++; last;}
+           ){print $out2 encode_utf8("$data[5],4 その他の情報\n"); $flag++; last;}
 
            $k++;
          }
@@ -162,7 +162,7 @@ sub main()
            ||($line=~"商号の変更") || ($line=~"名称変更")#12 25
            ||($line=~"内閣総理大臣"&&$line=~"申出")#13 28
            ||($line=~"調停開始"&&$line=~"申立")#14 29
-           ){print encode_utf8("$data[7],5 子会社等の決定事実\n"); $flag++; last;}
+           ){print $out2 encode_utf8("$data[5],5 子会社等の決定事実\n"); $flag++; last;}
 
              #7 子会社等の発生事実
            if(
@@ -177,19 +177,19 @@ sub main()
            ||($line=~"取引先"&&$line=~"取引停止")#9 12
            ||($line=~"債務免除"&&$line=~"金融支援")#10 13
            ||($line=~"資源の発見")#1 14
-           ){print encode_utf8("$data[7],6 子会社等の発生事実\n"); $flag++; last;}
+           ){print $out2 encode_utf8("$data[5],6 子会社等の発生事実\n"); $flag++; last;}
 
 	           #8 子会社等の業績予想
            if(
            ($line=~"業績予想"&&$line=~"修正") #1
            ||($line=~"配当予想"&&$line=~"修正")#2
-           ){print encode_utf8("$data[7],7 子会社等の業績予想の修正等\n"); $flag++; last;}
+           ){print $out2 encode_utf8("$data[5],7 子会社等の業績予想の修正等\n"); $flag++; last;}
 
            $k++;
 	       } #else sflag
        } #while 1行
 
        if($japanese==0){next;}
-       if($flag==0){print encode_utf8("$data[7],\n");}
+       if($flag==0){print $out2 encode_utf8("$data[5],\n");}
    }
 }
