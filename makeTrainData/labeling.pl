@@ -11,8 +11,7 @@ main();
 
 sub main()
 {
-   #my $home = $ENV{"HOME"};
-   my $TextDir = "../../TDNET/mk_txt/";
+   my $TextDir = "../../TDNET/mk_txt/txt2";
    my @TextList;
    find( sub{ push(@TextList,$File::Find::name) if(-f $_); },$TextDir);
 
@@ -22,7 +21,6 @@ sub main()
 
    foreach my $file (sort @TextList){     #file単位のループ
        my @data=split(/\//, $file);      #filename
-       #print encode_utf8("$data[7],");
 
        open(my $in, $file);
 

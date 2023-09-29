@@ -15,7 +15,7 @@ main();
 
 sub main(){
 
-  open(my $in, "senBERT.list");
+  open(my $in, "sentenceBERT.list");
 
 
   while(my $line=decode_utf8(<$in>)){     #file単位のループ
@@ -30,7 +30,7 @@ sub main(){
     my %hash;
     for(my $i=2; $i<=$#data; $i++){$hash{$data[$i]}++;}
 
-    open(my $in2, "TDNET/mk_txt/txt/$filename");
+    open(my $in2, "../../TDNET/mk_txt/txt2/$filename");
     my $sid=1;
 
 

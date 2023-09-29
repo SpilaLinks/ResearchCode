@@ -27,7 +27,7 @@ sentlist7=["子会社等の業績予想の修正、予想値と決算値の差�
 
 
 def main():
-    sbert = SentenceTransformer('./smodel')
+    sbert = SentenceTransformer('../../smodel')
 
     args = sys.argv
     sent1 = args[1]
