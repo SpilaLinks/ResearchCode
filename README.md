@@ -1,4 +1,4 @@
-# Research2
+# Research
 
 - 1.makeText
 - 2.makeTrainData
