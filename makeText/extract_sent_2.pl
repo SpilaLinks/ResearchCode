@@ -2,7 +2,7 @@
 
 use strict;
 
-# 文字コード関係
+# 文字コード関係aaa
 use Encode;
 use Encode::Detect::Detector;
 use Unicode::Normalize;
