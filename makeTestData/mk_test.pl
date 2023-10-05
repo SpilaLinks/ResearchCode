@@ -11,11 +11,14 @@ my $c=$model->createTagger();
 
 use File::Find;
 
+use constant OUTFILE => ">../../data.list/test.list";
+
 main();
 
 sub main(){
-
-  open(my $in, "../makeTrainData/label.txt");
+  print STDOUT "make ".OUTFILE." ...\n";
+  open(my $out, OUTFILE);
+  open(my $in, "../../data.list/label.txt");
 
   while(my $line=decode_utf8(<$in>)){
     chomp($line);
@@ -23,7 +26,7 @@ sub main(){
     if($#data>=1){next;}
 
     my $filename=$data[0];
-    open(my $in2, "../../TDNET/mk_txt/txt/$filename");
+    open(my $in2, "../../TDNET/mk_txt/txt2/$filename");
     my $sid=1;
 
 
@@ -58,7 +61,7 @@ sub main(){
       if($Kaisekikekka[0] ne "助動詞" && $Kaisekikekka[0] ne "助詞"){next;}
 
 
-      print encode_utf8("$filename:$sid $line2\n");
+      print $out encode_utf8("$filename:$sid $line2\n");
       $sid++;
 
     }#sen
