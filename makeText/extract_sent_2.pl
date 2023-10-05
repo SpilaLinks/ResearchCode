@@ -78,7 +78,7 @@ sub getSentence
 {
   my($pdf_data) = @_;
 
-  my @text_list = `pdftotext -layout -nopgbrk $pdf_data -`;
+  my @text_list = `pdftotext $pdf_data -`;
 
   my $full_text = "";
   foreach my $text_utf8 (@text_list)
@@ -94,31 +94,35 @@ sub getSentence
     # 半角全角変換
     my $sent = ascii2wide($str_utf);
 
-    #英語、数字のみの塊を除去
-    my $sent=replaceEnglishAndNumber($sent);
-
-    $sent =~ s/[\s　]+//g;
-    $sent =~ s/ //g;
-    $sent =~ s/　//g;
-
-    # 固有表現置き換え
-    $sent=replaceNamedEntity($sent);
-
     $sent =~ s/^　//;
     $sent =~ s/^△//;
     $sent =~ s/^○//;
     $sent =~ s/…//g;
 
+    # 改行コード除去
+    $sent =~ s/\x0D\x0A$|\x0D$|\x0A$//;
+
     # 制御コードの除去
-    $sent =~ s///;
-    $sent =~ s///;
-    $sent =~ s///;
-    $sent =~ s///;
-    $sent =~ s/[[:cntrl:]]//g;
+    #$sent =~ s///;
+    #$sent =~ s///;
+    #$sent =~ s///;
+    #$sent =~ s///;
+    #$sent =~ s/[[:cntrl:]]//g;
 
     $sent = "。" if($sent eq "");
 
-    $full_text .= $sent;
+    my @splitSentence=split(/\a/, $sent);
+    my $i=0;
+    foreach my $sen(@splitSentence){
+      if($i<$#splitSentence){$sen.="。";}
+      $full_text.=$sen;
+      $i++;
+    }
+
+    #英語、数字のみの塊を置き換え　X除去
+    #my $sent=replaceEnglishAndNumber($sent);
+
+    #$full_text .= $sent;
   }
   undef @text_list;
 
@@ -171,19 +175,6 @@ sub extractSubList
   return @SubList;
 }
 
-sub replaceNamedEntity{
-  my $sentence=$_[0];
-  my $mecab_results = decode_utf8($c->parse($sentence));
-  my @POS = split(/\n/,$mecab_results);
-  foreach my $wordAndInfo(@POS){
-    next if($wordAndInfo!~"固有名詞");
-    my @wordAndInfoList=split(/\t/, $wordAndInfo);
-    my $namedEntity=$wordAndInfoList[0];
-    $sentence=~s/$namedEntity/*/;
-  }
-  return $sentence;
-}
-
 sub replaceEnglishAndNumber{
   my $sentence=$_[0];
   $sentence=~s/[\s　]+/ /g;
@@ -191,7 +182,7 @@ sub replaceEnglishAndNumber{
   foreach my $line(@lines){
     my @words1=split(/ /, $line);
     foreach my $word(@words1){
-      if($word!~/[\p{Han}\p{Hiragana}\p{Katakana}]/){$sentence=~s/$word//g;}
+      #if($word!~/[\p{Han}\p{Hiragana}\p{Katakana}]/){$sentence=~s/$word/#/g;}
     }
   }
   return $sentence;
