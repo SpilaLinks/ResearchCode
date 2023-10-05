@@ -60,6 +60,7 @@ sub main
       foreach my $sent (@sentence)
       {
         my $id = $pdf.":".$t;
+        $sent=removeCotrolCharacter($sent);
         print $OUT encode_utf8("$id $sent\n");
 
         $t++;
@@ -185,5 +186,18 @@ sub replaceEnglishAndNumber{
       #if($word!~/[\p{Han}\p{Hiragana}\p{Katakana}]/){$sentence=~s/$word/#/g;}
     }
   }
+  return $sentence;
+}
+
+sub removeCotrolCharacter{
+  my $sentence=$_[0];
+  # 改行コード除去
+  $sentence =~ s/\x0D\x0A$|\x0D$|\x0A$//;
+  # 制御コードの除去
+  $sentence =~ s///g;
+  $sentence =~ s///g;
+  $sentence =~ s///g;
+  $sentence =~ s///g;
+  $sentence =~ s/[[:cntrl:]]//g;
   return $sentence;
 }
