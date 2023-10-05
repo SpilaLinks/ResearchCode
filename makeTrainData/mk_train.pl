@@ -17,7 +17,7 @@ main();
 sub main(){
   print STDOUT "make ".OUTFILE." ...\n";
   open(my $in, "sentenceBERT.list");
-  open(my $out, ">".OUTFILE);
+  open(my $out, ">../../data.list/".OUTFILE);
 
   while(my $line=decode_utf8(<$in>)){     #file単位のループ
     chomp($line);

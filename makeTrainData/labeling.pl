@@ -17,8 +17,8 @@ sub main()
 
    my $kessan=0;
 
-   open(my $out, ">kessan.list");
-   open(my $out2, ">label.list");
+   open(my $out, ">../../data.list/kessan.list");
+   open(my $out2, ">../../data.list/label.list");
    foreach my $file (sort @TextList){     #file単位のループ
        my @data=split(/\//, $file);      #filename
 
