@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-#last appdated : 6/28
 
 use strict;
 use Encode;
@@ -11,12 +10,14 @@ my $c=$model->createTagger();
 
 use File::Find;
 
+use constant OUTFILE => "train.list";
+
 main();
 
 sub main(){
-
+  print STDOUT "make ".OUTFILE." ...\n";
   open(my $in, "sentenceBERT.list");
-
+  open(my $out, ">".OUTFILE);
 
   while(my $line=decode_utf8(<$in>)){     #file単位のループ
     chomp($line);
@@ -47,13 +48,14 @@ sub main(){
       $d1[1]=~s/\t//g;
       $d1[1]=~s/　//g;
       $d1[1]=~s/ //g;
+      $d1[1]=replaceNamedEntity($d[1]);
       if($d1[1] eq ""){next;}
 
       my @d2=split(/:/, $d1[0]);  #原文書の文ID
       my $gsid=$d2[1];
 
       if(exists($hash{$gsid})){
-        print encode_utf8("$label $filename:$sid $d1[1]\n");
+        print $out encode_utf8("$label $filename:$sid $d1[1]\n");
         $sid++;
       }
 
@@ -62,4 +64,17 @@ sub main(){
 
   }#file単位
 
+}
+
+sub replaceNamedEntity{
+  my $sentence=$_[0];
+  my $mecab_results = decode_utf8($c->parse($sentence));
+  my @POS = split(/\n/,$mecab_results);
+  foreach my $wordAndInfo(@POS){
+    next if($wordAndInfo!~"固有名詞");
+    my @wordAndInfoList=split(/\t/, $wordAndInfo);
+    my $namedEntity=$wordAndInfoList[0];
+    $sentence=~s/$namedEntity/*/;
+  }
+  return $sentence;
 }
