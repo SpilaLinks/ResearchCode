@@ -35,38 +35,44 @@ def main():
             print('\t{0:s}: {1:f}'.format(lemma, tfidf))
 
 def makeDocs(doc_id):
-    filepaths=glob.glob(PATH)
     docs=[]
-    i=0
-    for path in filepaths:
-        doc_id[i]=path.split('/')[1]
-        i+=1
+    doc_id_num=0
+
+    file=open("label.list")
+    for l in file:     #file単位のループ
+        line=l.rstrip()
+        filename_label=line.split(',')
+        if not filename_label[1] : continue
+        doc_id[doc_id_num]=filename_label[0]
+        doc_id_num+=1
+
+        #print(doc_id[doc_id_num])
+        file2=open("txt2/"+doc_id[doc_id_num-1])
         oneFileWords=""
-        with open(path) as f:
-            for inputLine in f:
-                splitLine=inputLine.split(' ', 1)
-                txt=splitLine[1]
-                if not re.search(r'[ぁ-ん]+|[ァ-ヴー]+|[一-龠]+', txt) : continue
-                txt=txt.rstrip();       #改行削除
-                txt.replace('　', '')   #制御文字削除
-                txt.replace('\a', '')
-                txt.replace('\f', '')
-                txt.replace('\r', '')
-                txt.replace('\0', '')
-                txt.replace('\v', '')
-                txt.replace('\b', '')
-                txt.replace('\t', '')
-                txt.replace('\n', '')
-                if not txt : continue
-                #形態素解析
-                mecab_results=mecab.parse(txt)
-                results=mecab_results.split('\n')
-                for splitResult in results:
-                    if not("名詞" in splitResult): continue
-                    if "固有名詞" in splitResult: continue
-                    if not re.search(r'[ぁ-ん]+|[ァ-ヴー]+|[一-龠]+', splitResult.split('\t')[0]) : continue
-                    #oneFileWords.append(splitResult.split('\t')[0])
-                    oneFileWords+=splitResult.split('\t')[0]+" "
+        for inputLine in file2:              #文単位
+            splitLine=inputLine.split(' ', 1)
+            txt=splitLine[1]
+            if not re.search(r'[ぁ-ん]+|[ァ-ヴー]+|[一-龠]+', txt) : continue
+            txt=txt.rstrip();       #改行削除
+            txt.replace('　', '')   #制御文字削除
+            txt.replace('\a', '')
+            txt.replace('\f', '')
+            txt.replace('\r', '')
+            txt.replace('\0', '')
+            txt.replace('\v', '')
+            txt.replace('\b', '')
+            txt.replace('\t', '')
+            txt.replace('\n', '')
+            if not txt : continue
+            #形態素解析
+            mecab_results=mecab.parse(txt)
+            results=mecab_results.split('\n')
+            for splitResult in results:
+                if not("名詞" in splitResult): continue
+                if "固有名詞" in splitResult: continue
+                if not re.search(r'[ぁ-ん]+|[ァ-ヴー]+|[一-龠]+', splitResult.split('\t')[0]) : continue
+                #oneFileWords.append(splitResult.split('\t')[0])
+                oneFileWords+=splitResult.split('\t')[0]+" "
         oneFileWords=oneFileWords.rstrip()
         docs.append(oneFileWords)
     return docs
