@@ -10,14 +10,14 @@ my $c=$model->createTagger();
 
 use File::Find;
 
-use constant OUTFILE => "train.list";
-use constant THRESHOLD_TFIDF => 1;
+use constant OUTFILE => "../../data.list/train.list";
+use constant THRESHOLD_TFIDF => 0.5;
 
 main();
 
 sub main(){
   print STDOUT "make ".OUTFILE." ...\n";
-  open(my $out, ">../../data.list/".OUTFILE);
+  open(my $out, OUTFILE);
   open(my $in, "../../data.list/label.list");
 
   while(my $line=decode_utf8(<$in>)){     #file単位のループ
@@ -28,31 +28,44 @@ sub main(){
     my $filename=$filename_label[0];    #filename
     my $label=$filename_label[1];       #label
 
-    my %tfidf=load_tfidf($filename);  #tfidf値の読み込み
+    my %tfidf=load_tfidf($filename);   #tfidf値の読み込み
 
     open(my $in2, "../../TDNET/mk_txt/txt2/$filename");
     my $sid=1;
-    while(my $str=<$in2>){      #文単位のループ
+    while(my $str=decode_utf8(<$in2>)){      #文単位のループ
       chomp($str);
-      my $string=deleteCntrL([split(/ /, $str)]->[1]);
-      my $line2=decode_utf8($str);
-
-      my @id_sentence=split(/ /, $line2);
-      my $sentence=$id_sentence[1];
+      my $sentence=[split(/ /, $str)]->[1];
       $sentence=~s/[[:cntrl:]]//g;
+      $sentence=~s/\a//g;
+      $sentence=~s/\f//g;
+      $sentence=~s/\r//g;
+      $sentence=~s/\0//g;
+      $sentence=~s/\v//g;
+      $sentence=~s/\b//g;
+      $sentence=~s/\t//g;
       $sentence=~s/　//g;
+      $sentence=~s/\s//g;
+      $sentence=~s/[\s　]//g;
       $sentence=~s/ //g;
-      #$sentence=replaceNamedEntity($sentence);
+      my $str_utf8=encode_utf8($sentence);
       if($sentence eq ""){next;}
 
-      #print ([split(/ /, $str)]->[1]."\n");
-      my $sum=calc_total_tfidf(%tfidf, $string);
-      #print encode_utf8("$sum : $sentence\n");
-      if(calc_total_tfidf(%tfidf, $sentence)<THRESHOLD_TFIDF){next;}
+      #tf-idfの計算
+      my $sum_tfidf=0;
+      my $mecab_results=decode_utf8($c->parse($str_utf8));
+      my @split_result=split(/\n/, $mecab_results);
+      foreach my $word_info(@split_result){
+        if($word_info eq "EOS"){next;}
+        my $word=[split(/\t/, $word_info)]->[0];
+        $sum_tfidf+=$tfidf{$word};
+      }
+      #print("$sum_tfidf\n");
+      if($sum_tfidf<THRESHOLD_TFIDF){next;}
 
-      print $out encode_utf8("$label $filename:$sid $sentence\n");
+      print encode_utf8("$label $filename:$sid $sentence\n");
       $sid++;
     }#文単位
+    undef %tfidf;
   }#file単位
 
 }
@@ -81,32 +94,10 @@ sub load_tfidf{
     if($line=~$filename){$flag=1; next;}
     if($flag){
       my @word_tfidf=split(/: /, $line);
+      $word_tfidf[0]=~s/\t//g;
       $tfidf{$word_tfidf[0]}=$word_tfidf[1];
     }
   }
   close($in);
   return %tfidf;
-}
-
-sub calc_total_tfidf{
-  my %tfidf=$_[0];
-  my $sentence=$_[1];
-  print ("$sentence\n");
-  my $sum_tfidf=0;
-  my $mecab_results=decode_utf8($c->parse($sentence));
-  my @split_result=split(/\n/, $mecab_results);
-  foreach my $word_info(@split_result){
-    if($word_info eq "EOS"){last;}
-    my $word=[split(/\t/, $word_info)]->[0];
-    #print encode_utf8("$word\n");
-    $sum_tfidf+=$tfidf{$word};
-  }
-  return $sum_tfidf;
-}
-
-sub deleteCntrL{
-  $_[0]=~s/[[:cntrl:]]//g;
-  $_[0]=~s/　//g;
-  $_[0]=~s/ //g;
-  return $_[0];
 }
