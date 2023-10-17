@@ -26,7 +26,7 @@ sub main(){
     if($#filename_label<1){next;}
 
     my $filename=$filename_label[0];    #filename
-    my $label=$filename_label[1];       #label
+    my $label=[split(/ /, $filename_label[1])]->[0];       #label
 
     my %tfidf=load_tfidf($filename);   #tfidf値の読み込み
 
