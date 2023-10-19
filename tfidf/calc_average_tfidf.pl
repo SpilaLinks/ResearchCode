@@ -12,8 +12,8 @@ use constant THRESHOLD_TFIDF => 0.5;
 main();
 
 sub main(){
-  open(my $in, "label.list");
-  my $sumAllSentenceTfidf=0;
+  open(my $in, "../../data.list/label.list");
+  my $averageTfidf=0;
   my $N=0;
   while(my $line=decode_utf8(<$in>)){     #file単位のループ
     chomp($line);
@@ -25,7 +25,7 @@ sub main(){
 
     my %tfidf=load_tfidf($filename);   #tfidf値の読み込み
 
-    open(my $in2, "txt2/$filename");
+    open(my $in2, "../../TDNET/mk_txt/txt2/$filename");
     while(my $str=decode_utf8(<$in2>)){      #文単位のループ
       chomp($str);
       my $sentence=[split(/ /, $str)]->[1];
@@ -54,21 +54,20 @@ sub main(){
         $sum_tfidf+=$tfidf{$word};
       }
       if($sum_tfidf==0){next;}
-      $sumAllSentenceTfidf+=$sum_tfidf;
+      $averageTfidf=($averageTfidf*$N+$sum_tfidf)/($N+1);
       $N++;
+      print("N=$N : average=$averageTfidf\n");
     }#文単位
     undef %tfidf;
   }#file単位
-  print($sumAllSentenceTfidf);
-  print($N);
-  print($sumAllSentenceTfidf/$N);
+  print("\nEOC\nN=$N : average=$averageTfidf\n");
 }
 
 sub load_tfidf{
   my $filename=$_[0];
   my %tfidf;
 
-  open(my $in, "tfidf.list");
+  open(my $in, "../../data.list/tfidf.list");
   my $flag=0;
   while(my $line=decode_utf8(<$in>)){
     if($flag==1 && $line!~"\t"){last;}
