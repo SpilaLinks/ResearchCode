@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-#last updated : 6/27
 
 use strict;
 use Encode;
@@ -18,21 +17,20 @@ main();
 sub main(){
   print STDOUT "make ".OUTFILE." ...\n";
   open(my $out, OUTFILE);
-  open(my $in, "../../data.list/label.txt");
+  open(my $in, "../../data.list/label.list");
 
   while(my $line=decode_utf8(<$in>)){
     chomp($line);
-    my @data=split(/,/, $line);
-    if($#data>=1){next;}
+    my @filename_label=split(/,/, $line);
+    if($#filename_label>=1){next;}
 
-    my $filename=$data[0];
+    my $filename=$filename_label[0];
     open(my $in2, "../../TDNET/mk_txt/txt2/$filename");
     my $sid=1;
 
 
 
     while(my $str=<$in2>){
-
       my $tmp=decode_utf8($str);
       my @d=split(/ /, $tmp);
       my $line2=$d[1];
@@ -58,7 +56,7 @@ sub main(){
       my @pos=split(/\n/, $mecab_results);
       my @TangoHinsi=split(/\t/, $pos[$#pos-1]);
       my @Kaisekikekka=split(/,/, $TangoHinsi[1]);
-      if($Kaisekikekka[0] ne "助動詞" && $Kaisekikekka[0] ne "助詞"){next;}
+      #if($Kaisekikekka[0] ne "助動詞" && $Kaisekikekka[0] ne "助詞"){next;}
 
 
       print $out encode_utf8("$filename:$sid $line2\n");

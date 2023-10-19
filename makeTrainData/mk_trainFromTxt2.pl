@@ -10,14 +10,14 @@ my $c=$model->createTagger();
 
 use File::Find;
 
-use constant OUTFILE => "../../data.list/train.list";
+#use constant OUTFILE => "../../data.list/train.list";
 use constant THRESHOLD_TFIDF => 0.5;
 
 main();
 
 sub main(){
-  print STDOUT "make ".OUTFILE." ...\n";
-  open(my $out, OUTFILE);
+  #print STDOUT "make ".OUTFILE." ...\n";
+  #open(my $out, OUTFILE);
   open(my $in, "../../data.list/label.list");
 
   while(my $line=decode_utf8(<$in>)){     #file単位のループ
@@ -49,7 +49,7 @@ sub main(){
       $sentence=~s/ //g;
       my $str_utf8=encode_utf8($sentence);
       if($sentence eq ""){next;}
-
+=pod
       #tf-idfの計算
       my $sum_tfidf=0;
       my $mecab_results=decode_utf8($c->parse($str_utf8));
@@ -61,7 +61,7 @@ sub main(){
       }
       #print("$sum_tfidf\n");
       if($sum_tfidf<THRESHOLD_TFIDF){next;}
-
+=cut
       print encode_utf8("$label $filename:$sid $sentence\n");
       $sid++;
     }#文単位
