@@ -42,7 +42,7 @@ def makeDocs(doc_id):
     for l in file:     #file単位のループ
         line=l.rstrip()
         filename_label=line.split(',')
-        if not filename_label[1] : continue
+        if filename_label[1]=="" : continue
         doc_id[doc_id_num]=filename_label[0]
         doc_id_num+=1
 
