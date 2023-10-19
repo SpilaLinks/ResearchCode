@@ -3,34 +3,29 @@
 use strict;
 use Encode;
 use utf8;
-
 use MeCab;
 my $model=new MeCab::Model();
 my $c=$model->createTagger();
 
-use File::Find;
-
-#use constant OUTFILE => "../../data.list/train.list";
 use constant THRESHOLD_TFIDF => 0.5;
 
 main();
 
 sub main(){
-  #open(my $out, OUTFILE);
-  open(my $in, "../../data.list/label.list");
-
+  open(my $in, "label.list");
+  my $sumAllSentenceTfidf=0;
+  my $N=0;
   while(my $line=decode_utf8(<$in>)){     #file単位のループ
     chomp($line);
     my @filename_label=split(/,/, $line);
-    if($#filename_label<1){next;}
+    if($#filename_label==0){next;}
 
     my $filename=$filename_label[0];    #filename
     my $label=[split(/ /, $filename_label[1])]->[0];       #label
 
     my %tfidf=load_tfidf($filename);   #tfidf値の読み込み
 
-    open(my $in2, "../../TDNET/mk_txt/txt2/$filename");
-    my $sid=1;
+    open(my $in2, "txt2/$filename");
     while(my $str=decode_utf8(<$in2>)){      #文単位のループ
       chomp($str);
       my $sentence=[split(/ /, $str)]->[1];
@@ -58,35 +53,22 @@ sub main(){
         my $word=[split(/\t/, $word_info)]->[0];
         $sum_tfidf+=$tfidf{$word};
       }
-      #print("$sum_tfidf\n");
-      if($sum_tfidf<THRESHOLD_TFIDF){next;}
-
-      print encode_utf8("$label $filename:$sid $sentence\n");
-      $sid++;
+      if($sum_tfidf==0){next;}
+      $sumAllSentenceTfidf+=$sum_tfidf;
+      $N++;
     }#文単位
     undef %tfidf;
   }#file単位
-
-}
-
-sub replaceNamedEntity{
-  my $sentence=$_[0];
-  my $mecab_results = decode_utf8($c->parse($sentence));
-  my @POS = split(/\n/,$mecab_results);
-  foreach my $wordAndInfo(@POS){
-    next if($wordAndInfo!~"固有名詞");
-    my @wordAndInfoList=split(/\t/, $wordAndInfo);
-    my $namedEntity=$wordAndInfoList[0];
-    $sentence=~s/$namedEntity/*/;
-  }
-  return $sentence;
+  print($sumAllSentenceTfidf);
+  print($N);
+  print($sumAllSentenceTfidf/$N);
 }
 
 sub load_tfidf{
   my $filename=$_[0];
   my %tfidf;
 
-  open(my $in, "../../data.list/tfidf.list");
+  open(my $in, "tfidf.list");
   my $flag=0;
   while(my $line=decode_utf8(<$in>)){
     if($flag==1 && $line!~"\t"){last;}
