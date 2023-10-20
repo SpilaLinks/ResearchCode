@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-#最終更新日：
 
 use strict;
 use Encode;
