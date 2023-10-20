@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
+no strict "refs";
 use Encode;
 use utf8;
 
@@ -10,14 +11,14 @@ my $c=$model->createTagger();
 
 use File::Find;
 
-#use constant OUTFILE => "../../data.list/train.list";
-use constant THRESHOLD_TFIDF => 0.5;
+my $OUTFILE="../../data.list/train.list";
+my $THRESHOLD_TFIDF=0.8;
 
 main();
 
 sub main(){
-  #open(my $out, OUTFILE);
-  open(my $in, "../../data.list/label.list");
+  open(my $out, ">", $OUTFILE) or die "Can't open write-file:$!\n";
+  open(my $in, "<", "../../data.list/label.list") or die "Can't open read-file:$!\n";
 
   while(my $line=decode_utf8(<$in>)){     #file単位のループ
     chomp($line);
@@ -29,7 +30,7 @@ sub main(){
 
     my %tfidf=load_tfidf($filename);   #tfidf値の読み込み
 
-    open(my $in2, "../../TDNET/mk_txt/txt2/$filename");
+    open(my $in2, "<", "../../TDNET/mk_txt/txt2/$filename") or die "Can't open txt2/xxx.txt:$!\n";
     my $sid=1;
     while(my $str=decode_utf8(<$in2>)){      #文単位のループ
       chomp($str);
@@ -58,10 +59,8 @@ sub main(){
         my $word=[split(/\t/, $word_info)]->[0];
         $sum_tfidf+=$tfidf{$word};
       }
-      #print("$sum_tfidf\n");
-      if($sum_tfidf<THRESHOLD_TFIDF){next;}
-
-      print encode_utf8("$label $filename:$sid $sentence\n");
+      if($sum_tfidf<$THRESHOLD_TFIDF){next;}
+      print $out encode_utf8("$label $filename:$sid $sentence\n");
       $sid++;
     }#文単位
     undef %tfidf;
@@ -86,7 +85,7 @@ sub load_tfidf{
   my $filename=$_[0];
   my %tfidf;
 
-  open(my $in, "../../data.list/tfidf.list");
+  open(my $in, "<", "../../data.list/tfidf.list") or die "Can't open tfidf.list:$!\n";
   my $flag=0;
   while(my $line=decode_utf8(<$in>)){
     if($flag==1 && $line!~"\t"){last;}
