@@ -10,7 +10,7 @@ main();
 
 sub main(){
 
-  my $FILEPATH1="../classifyBERT/classified_bert.list";
+  my $FILEPATH1="../../data.list/bert_label.list";
   my $FILEPATH2="../classifyBERT/classified_RoBERTA.list";
 
   my $l0=0; my $l1=0; my $l2=0; my $l3=0; my $l4=0; my $l5=0;my $l6=0;my $l7=0;

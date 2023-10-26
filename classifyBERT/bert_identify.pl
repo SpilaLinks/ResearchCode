@@ -11,7 +11,7 @@ sub main
     $chash{0}="0:上場会社の決定事実"; $chash{1}="1:上場会社の発生事実"; $chash{2}="2:上場会社の決算情報"; $chash{3}="3:上場会社の業績予想、配当予想の修正"; $chash{4}="4:その他の情報"; $chash{5}="5:子会社等の決定事実"; $chash{6}="6:子会社等の発生事実"; $chash{7}="7:子会社等の業績予想";
 
 
-    open(my $in, "test.list");
+    open(my $in, "<", "../../data.list/test.list");
     my @bunsuu;
     my @id;
     my $i=-1;
@@ -27,7 +27,7 @@ sub main
     close($in);
 
 
-    open(my $in, "output");
+    open(my $in, "<", "../../data.list/output");
     my %yudo;
     my $flag=1; my $idnum=0;
 
