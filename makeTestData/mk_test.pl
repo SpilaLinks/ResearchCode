@@ -10,14 +10,14 @@ my $c=$model->createTagger();
 
 use File::Find;
 
-use constant OUTFILE => ">../../data.list/test.list";
+use constant OUTFILE => "../../data.list/test.list";
 
 main();
 
 sub main(){
   print STDOUT "make ".OUTFILE." ...\n";
-  open(my $out, OUTFILE);
-  open(my $in, "../../data.list/label.list");
+  open(my $out, ">", OUTFILE);
+  open(my $in, "<", "../../data.list/label.list");
 
   while(my $line=decode_utf8(<$in>)){
     chomp($line);
