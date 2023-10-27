@@ -7,12 +7,10 @@ use MeCab;
 my $model=new MeCab::Model();
 my $c=$model->createTagger();
 
-use constant THRESHOLD_TFIDF => 0.5;
-
 main();
 
 sub main(){
-  open(my $in, "../../data.list/label.list");
+  open(my $in, "<", "../../data.list/label.list");
   my $averageTfidf=0;
   my $N=0;
   while(my $line=decode_utf8(<$in>)){     #file単位のループ
@@ -25,7 +23,7 @@ sub main(){
 
     my %tfidf=load_tfidf($filename);   #tfidf値の読み込み
 
-    open(my $in2, "../../TDNET/mk_txt/txt2/$filename");
+    open(my $in2, "<", "../../TDNET/mk_txt/txt2/$filename");
     while(my $str=decode_utf8(<$in2>)){      #文単位のループ
       chomp($str);
       my $sentence=[split(/ /, $str)]->[1];
@@ -67,7 +65,7 @@ sub load_tfidf{
   my $filename=$_[0];
   my %tfidf;
 
-  open(my $in, "../../data.list/tfidf.list");
+  open(my $in, "<", "../../data.list/tfidf.list");
   my $flag=0;
   while(my $line=decode_utf8(<$in>)){
     if($flag==1 && $line!~"\t"){last;}
