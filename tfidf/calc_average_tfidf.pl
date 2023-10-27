@@ -16,7 +16,7 @@ sub main(){
   while(my $line=decode_utf8(<$in>)){     #file単位のループ
     chomp($line);
     my @filename_label=split(/,/, $line);
-    if($#filename_label==0){next;}
+    if($#filename_label==0){next;}    #testデータは飛ばす
 
     my $filename=$filename_label[0];    #filename
     my $label=[split(/ /, $filename_label[1])]->[0];       #label
