@@ -13,7 +13,7 @@ sub main(){
   my $FILEPATH1="../../data.list/bert_label.list";
   my $FILEPATH2="../classifyBERT/classified_RoBERTA.list";
 
-  my $l0=0; my $l1=0; my $l2=0; my $l3=0; my $l4=0; my $l5=0;my $l6=0;my $l7=0;
+  my $l0=0; my $l1=0; my $l2=0; my $l3=0; my $l4=0; my $l5=0; my $l6=0; my $l7=0; my $l8=0;
 
   my $filename=$FILEPATH1;
 
@@ -34,8 +34,9 @@ sub main(){
     if($data[0]eq"5"){$l5++;}
     if($data[0]eq"6"){$l6++;}
     if($data[0]eq"7"){$l7++;}
+    if($data[0]eq"8"){$l8++;}
   }
 
-  print encode_utf8("[0]上場会社の決定事実 : $l0\n[1]上場会社の発生事実 : $l1\n[2]上場会社の決算情報 : $l2\n[3]上場会社の業績予想、配当予想の修正等 : $l3\n[4]その他の情報 : $l4\n[5]子会社等の決定事実 : $l5\6\n[6]子会社等の発生事実 : $l6\n[7]子会社等の業績予想の修正等 : $l7\n\n");
+  print encode_utf8("[0]上場会社の決定事実 : $l0\n[1]上場会社の発生事実 : $l1\n[2]上場会社の決算情報 : $l2\n[3]上場会社の業績予想、配当予想の修正等 : $l3\n[4]その他の情報 : $l4\n[5]子会社等の決定事実 : $l5\n[6]子会社等の発生事実 : $l6\n[7]子会社等の業績予想の修正等 : $l7\n[8]該当なし : $l8\n\n");
 
 }
