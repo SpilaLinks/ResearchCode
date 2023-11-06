@@ -13,11 +13,7 @@ sub main()
    my $TextDir = "../../TDNET/mk_txt/txt2";
    my @TextList;
    find( sub{ push(@TextList,$File::Find::name) if(-f $_); },$TextDir);
-
-   my $kessan=0;
-
-   open(my $out, ">../../data.list/kessan.list");
-   open(my $out2, ">../../data.list/label.list");
+   open(my $out, ">../../data.list/label.list");
    foreach my $file (sort @TextList){     #file単位のループ
        my @data=split(/\//, $file);      #filename
 
@@ -39,7 +35,7 @@ sub main()
 	       #[文字列マッチング]
 
 	       #"子会社"のワードがあればsflagをたてる
-         if($line=~/子会社/ &&($line=~/お知らせ$/ || $line=~/ついて$/)){
+         if($line=~/.*子会社.*(お知らせ|について).*/){
            if($line!~"子会社化"){$sflag=1;}
          }
 
@@ -50,28 +46,25 @@ sub main()
           ||($line=~/Ｎｅｗｓ　Ｒｅｌｅａｓｅ/i && $k<=1) #先頭1行までしか見ない
           ||($line=~/ＮｅｗｓＲｅｌｅａｓｅ/i && $k<=1)   #上同様
           ||($line=~"ＥＴＦ" && $line=~"日々の開示事項" && $k<=3)){ #先頭3行までしか見ない
-            print $out2 encode_utf8("$data[5],8 該当なし\n"); $flag++; last;
+            print $out encode_utf8("$data[5],8 該当なし\n"); $flag++; last;
           }
           # 4 その他の情報
   	      if((($line=~"投資単位"&&$line=~"引下げ") #1
           ||($line=~"財務会計基準機構" && $line=~"加入") #2
-          ||($line=~"ＭＳＣＢ"&&$line=~"転換")||($line=~"ＭＳＣＢ"&&$line=~"行使") #3
+          ||($line=~/.*(新株予約権|新株予約権付社債).*(転換|行使.*状況).*/)#3
           ||($line=~"支配株主"&&$line=~"事項")#4
           ||($line=~"親会社"&&$line=~"決算") #5
           ||($line=~"経営計画") #6
           ||($line=~"上場維持基準"&&$line=~"計画") #7
-          ) && ($line=~"お知らせ"||$line=~"について")){print $out2 encode_utf8("$data[5],4 その他の情報\n"); $flag++; last;}
+          ) && ($line=~/.*(お知らせ|について).*/)){print $out encode_utf8("$data[5],4 その他の情報\n"); $flag++; last;}
           # 3 上場会社の業績予想、配当予想の修正
   	      if((($line=~"業績予想"&&$line=~"修正") #1
           ||($line=~"業績予想"&&$line=~"差異")
           ||($line=~"配当予想"&&$line=~"修正") #2
-          ) && ($line=~"お知らせ"||$line=~"について")){print $out2 encode_utf8("$data[5],3 上場会社の業績予想、配当予想の修正等\n"); $flag++; last;}
+          ) && ($line=~/.*(お知らせ|について).*/)){print $out encode_utf8("$data[5],3 上場会社の業績予想、配当予想の修正等\n"); $flag++; last;}
           # 2 上場会社の決算情報
-  	      if($line=~"決算短信" && $k<=3){     #クラス2は先頭3行までしか見ない
-            if($kessan>=100){print $out2 encode_utf8("$data[5],2 上場会社の決算情報\n"); $flag++; last;}
-            $kessan++;
-            print $out encode_utf8("$data[5]\n");
-            last;
+  	      if($line=~/.*決算短信.*(〔日本基準〕|（ＲＥＩＴ）).*/ && $k<=3){     #クラス2は先頭3行までしか見ない
+            print $out encode_utf8("$data[5],2 上場会社の決算情報\n"); $flag++; last;
           }
   	      # 0 上場会社の決定事実
   	      if((
@@ -116,7 +109,7 @@ sub main()
            || ($line=~"定款"&&$line=~"変更") #36
            || ($line=~"全部取得条項付種類株式"&&$line=~"取得") #37
            || ($line=~"特別支配株主"&&$line=~"承認")
-           ) && ($line=~"お知らせ"||$line=~"について")){print $out2 encode_utf8("$data[5],0 上場会社の決定事実\n"); $flag++; last;}
+           ) && ($line=~/.*(お知らせ|について).*/)){print $out encode_utf8("$data[5],0 上場会社の決定事実\n"); $flag++; last;}
 
   	       # 1 上場会社の発生事実
   	       if((
@@ -142,9 +135,9 @@ sub main()
            ||($line=~"報告書"&&$line=~"提出遅延") #22
            ||($line=~"報告書"&&$line=~"提出期限延長申請") #23
            ||($line=~"監査報告書"&&$line=~"不適正意見") #24
-           ||($line=~"内部統制監査報告書"&&$line=~"意見不表明")#25
+           ||($line=~/.*報告書.*提出期限.*延長.*承認.*/)#25
            ||($line=~"株式事務代行委託契約の解除通知") #26
-           ) && ($line=~"お知らせ"||$line=~"について")){print $out2 encode_utf8("$data[5],1 上場会社の発生事実\n"); $flag++; last;}
+           ) && ($line=~/.*(お知らせ|について).*/)){print $out encode_utf8("$data[5],1 上場会社の発生事実\n"); $flag++; last;}
          }
          else{    #〜子会社等の情報〜
 	        # 7 子会社等の業績予想
@@ -152,7 +145,7 @@ sub main()
            ($line=~"業績予想"&&$line=~"修正") #1
            ||($line=~"業績予想"&&$line=~"差異")
            ||($line=~"配当予想"&&$line=~"修正")#2
-           ) && ($line=~"お知らせ"||$line=~"について")){print $out2 encode_utf8("$data[5],7 子会社等の業績予想の修正等\n"); $flag++; last;}
+           ) && ($line=~/.*(お知らせ|について).*/)){print $out encode_utf8("$data[5],7 子会社等の業績予想の修正等\n"); $flag++; last;}
              # 5 子会社等の決定事実
            if((
            ($line=~"合併契約"&&$line=~"締結") #1 10
@@ -169,7 +162,7 @@ sub main()
            ||($line=~"商号の変更") || ($line=~"名称変更")#12 25
            ||($line=~"内閣総理大臣"&&$line=~"申出")#13 28
            ||($line=~"調停開始"&&$line=~"申立")#14 29
-           ) && ($line=~"お知らせ"||$line=~"について")){print $out2 encode_utf8("$data[5],5 子会社等の決定事実\n"); $flag++; last;}
+           ) && ($line=~/.*(お知らせ|について).*/)){print $out encode_utf8("$data[5],5 子会社等の決定事実\n"); $flag++; last;}
 
              # 6 子会社等の発生事実
            if((
@@ -184,11 +177,11 @@ sub main()
            ||($line=~"取引先"&&$line=~"取引停止")#9 12
            ||($line=~"債務免除"&&$line=~"金融支援")#10 13
            ||($line=~"資源の発見")#1 14
-           ) && ($line=~"お知らせ"||$line=~"について")){print $out2 encode_utf8("$data[5],6 子会社等の発生事実\n"); $flag++; last;}
+           ) && ($line=~/.*(お知らせ|について).*/)){print $out encode_utf8("$data[5],6 子会社等の発生事実\n"); $flag++; last;}
 	       } #else sflag
        } #while 1行
 
        if($japanese==0){next;}
-       if($flag==0){print $out2 encode_utf8("$data[5],\n");}
+       if($flag==0){print $out encode_utf8("$data[5],\n");}
    }
 }
