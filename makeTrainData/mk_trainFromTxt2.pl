@@ -12,7 +12,7 @@ my $c=$model->createTagger();
 use File::Find;
 
 my $OUTFILE="../../data.list/train.list";
-my $THRESHOLD_TFIDF=0.8;
+my $THRESHOLD_TFIDF=0.85;
 
 main();
 
