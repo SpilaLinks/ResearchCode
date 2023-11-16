@@ -54,7 +54,7 @@ sub main(){
       if($sum_tfidf==0){next;}
       $averageTfidf=($averageTfidf*$N+$sum_tfidf)/($N+1);
       $N++;
-      print("N=$N : average=$averageTfidf\n");
+      if($N%1000==0){print("N=$N : average=$averageTfidf\n");}
     }#文単位
     undef %tfidf;
   }#file単位
