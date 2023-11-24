@@ -7,7 +7,7 @@ use utf8;
 main();
 
 sub main(){
-    open(my $in, "<", "eva_100file.list");
+    open(my $in, "<", "recall.list");
     while(my $line=decode_utf8(<$in>)){
         chomp($line);
         my @data=split(/ /, $line);
