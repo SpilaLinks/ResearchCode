@@ -40,6 +40,15 @@ sub main(){
       $d1[1]=~s/　//g;
       $d1[1]=~s/ //g;
       if($d1[1] eq ""){next;}
+
+      #形態素解析
+      my $str_utf8=encode_utf8($d1[1]);
+      my $mecab_results=decode_utf8($c->parse($str_utf8));
+      my @pos=split(/\n/, $mecab_results);
+      my @TangoHinsi=split(/\t/, $pos[$#pos-1]);
+      my @Kaisekikekka=split(/,/, $TangoHinsi[1]);
+      if($Kaisekikekka[0] ne "助動詞" && $Kaisekikekka[0] ne "助詞"){next;}
+
       print $out encode_utf8("$label $filename:$sid $d1[1]\n");
       $sid++;
     }#sentence

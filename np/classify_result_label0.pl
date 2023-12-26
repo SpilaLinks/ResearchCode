@@ -21,7 +21,7 @@ sub main(){
 
   my $filename=$ARGV[0];
 
-  open(my $in, "classified_label0.list");
+  open(my $in, "<", "../../data.list/bert_label_label0.list");
   while(my $line=decode_utf8(<$in>)){
     chomp($line);
 
